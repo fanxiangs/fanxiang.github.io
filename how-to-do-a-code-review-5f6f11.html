@@ -1,1 +1,93 @@
-The template name has zero length, please check the "template" field in your Notion table.
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- iOS Safari -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- Chrome, Firefox OS and Opera Status Bar Color -->
+<meta name="theme-color" content="#FFFFFF">
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css">
+<link rel="stylesheet" type="text/css"
+  href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.19.0/themes/prism.min.css">
+<link rel="stylesheet" type="text/css" href="css/SourceSansPro.css">
+<link rel="stylesheet" type="text/css" href="css/theme.css">
+<link rel="stylesheet" type="text/css" href="css/notablog.css">
+<!-- Favicon -->
+
+  <link rel="shortcut icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text text-anchor=%22middle%22 dominant-baseline=%22middle%22 x=%2250%22 y=%2255%22 font-size=%2280%22&gt;📖&lt;/text&gt;&lt;/svg&gt;">
+
+<style>
+  :root {
+    font-size: 20px;
+  }
+</style>
+  <title>How to do a code review&nbsp;|&nbsp;Notablog</title>
+  <meta property="og:type" content="blog">
+  <meta property="og:title" content="How to do a code review">
+  
+  
+  <style>
+    .DateTagBar {
+      margin-top: 1.0rem;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="Navbar">
+  <a href="index.html">
+    <div class="Navbar__Btn">
+      
+        <span><img class="inline-img-icon" src="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text text-anchor=%22middle%22 dominant-baseline=%22middle%22 x=%2250%22 y=%2255%22 font-size=%2280%22&gt;📖&lt;/text&gt;&lt;/svg&gt;"></span>&nbsp;
+      
+      <span>Home</span>
+    </div>
+  </a>
+  
+    
+  
+    
+  
+    
+      <span class="Navbar__Delim">&centerdot;</span>
+      <a href="about.html">
+        <div class="Navbar__Btn">
+          
+            <span><img class="inline-img-icon" src="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text text-anchor=%22middle%22 dominant-baseline=%22middle%22 x=%2250%22 y=%2255%22 font-size=%2280%22&gt;😀&lt;/text&gt;&lt;/svg&gt;"></span>&nbsp;
+          
+          <span>About</span>
+        </div>
+      </a>
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+</nav>
+  <header class="Header">
+    
+    <div class="Header__Spacer Header__Spacer--NoCover">
+    </div>
+    
+    <h1 class="Header__Title">How to do a code review</h1>
+    
+  </header>
+  <article id="https://www.notion.so/5f6f110711384716b36adad308be2cd9" class="PageRoot"><div id="https://www.notion.so/cc1a6e4e5c794c74a11381af51b762a9" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><div id="https://www.notion.so/0b800dd8403b41fa83b3c6daf9ee1bbd" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">Google has many generalized engineering practices that cover all languages and all projects. These documents represent our collective experience of various best practices that we have developed over time. It is possible that open source projects or other organizations would benefit from this knowledge, so we work to make it available publicly when possible.</span></span></p></div><div id="https://www.notion.so/5e7efc66820744f4902d9ebdaf9498a8" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">Currently this contains the following documents:</span></span></p></div><ul class="BulletedListWrapper"><li id="https://www.notion.so/4ec95a584bdb4da3818a8c52d8dcfd2b" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString"><a class="SemanticString__Fragment SemanticString__Fragment--Link" href="https://google.github.io/eng-practices/review/">Google’s Code Review Guidelines</a></span><span class="SemanticString">, which are actually two separate sets of documents: </span><span class="SemanticString"></span></span><ul class="BulletedListWrapper"><li id="https://www.notion.so/76ad180da10e4870b2d9d0b3769ffbd5" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString"><a class="SemanticString__Fragment SemanticString__Fragment--Link" href="https://google.github.io/eng-practices/review/reviewer/">The Code Reviewer’s Guide</a></span></span></li><li id="https://www.notion.so/a4be087f7ea6448ebfd8b1d447ea6110" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString"><a class="SemanticString__Fragment SemanticString__Fragment--Link" href="https://google.github.io/eng-practices/review/developer/">The Change Author’s Guide</a></span></span></li></ul></li></ul><h2 id="https://www.notion.so/08e0178ddbdb4823b66cbe8d9d90dd15" class="ColorfulBlock ColorfulBlock--ColorDefault Heading Heading--2"><a class="Anchor" href="#https://www.notion.so/08e0178ddbdb4823b66cbe8d9d90dd15"><svg width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><span class="SemanticStringArray"><span class="SemanticString">Terminology</span></span></h2><div id="https://www.notion.so/ac97f388df8045b3bb538d0eb0933903" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">There is some Google-internal terminology used in some of these documents, which we clarify here for external readers:</span></span></p></div><ul class="BulletedListWrapper"><li id="https://www.notion.so/2c464dfb939743528abcf1e5595033b1" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">CL</strong></span><span class="SemanticString">: Stands for “changelist”, which means one self-contained change that has been submitted to version control or which is undergoing code review. Other organizations often call this a “change”, “patch”, or “pull-request”.</span></span></li><li id="https://www.notion.so/66d09e02ffd84f88baf0615df6b0d4e7" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">LGTM</strong></span><span class="SemanticString">: Means “Looks Good to Me”. It is what a code reviewer says when approving a CL.</span></span></li></ul><h2 id="https://www.notion.so/b47f7d569f5244e8ac5ae2cd1eb79641" class="ColorfulBlock ColorfulBlock--ColorDefault Heading Heading--2"><a class="Anchor" href="#https://www.notion.so/b47f7d569f5244e8ac5ae2cd1eb79641"><svg width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><span class="SemanticStringArray"><span class="SemanticString">License</span></span></h2><div id="https://www.notion.so/42f5b14182f24f4ea009188524986fed" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">The documents in this project are licensed under the </span><span class="SemanticString"><a class="SemanticString__Fragment SemanticString__Fragment--Link" href="https://google.github.io/eng-practices/LICENSE">CC-By 3.0 License</a></span><span class="SemanticString">, which encourages you to share these documents. See </span><span class="SemanticString"><a class="SemanticString__Fragment SemanticString__Fragment--Link" href="https://creativecommons.org/licenses/by/3.0/">https://creativecommons.org/licenses/by/3.0/</a></span><span class="SemanticString"> for more details.</span></span></p></div><a id="https://www.notion.so/bc68a910e33f41929510f821e072ec03" class="Page" href="https://www.notion.so/bc68a910e33f41929510f821e072ec03"><div><div class="Page__Icon"><svg viewBox="0 0 30 30" style="width:1.1875em;height:1.1875em;fill:inherit;opacity:0.8"><g><path d="M16,1H4v28h22V11L16,1z M16,3.828L23.172,11H16V3.828z M24,27H6V3h8v10h10V27z M8,17h14v-2H8V17z M8,21h14v-2H8V21z M8,25h14v-2H8V25z"></path></g></svg></div><div class="Page__Title"><span class="SemanticStringArray"><span class="SemanticString">Code Review Developer Guide | eng-practices</span></span></div></div></a></article>
+  <footer class="Footer">
+  <div>&copy; Notablog 2022</div>
+  <div>&centerdot;</div>
+  <div>Powered by <a href="https://github.com/dragonman225/notablog" target="_blank"
+      rel="noopener noreferrer">Notablog</a>.
+  </div>
+</footer>
+</body>
+
+</html>
