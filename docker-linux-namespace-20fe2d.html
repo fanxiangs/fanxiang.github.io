@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- iOS Safari -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- Chrome, Firefox OS and Opera Status Bar Color -->
+<meta name="theme-color" content="#FFFFFF">
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css">
+<link rel="stylesheet" type="text/css"
+  href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.19.0/themes/prism.min.css">
+<link rel="stylesheet" type="text/css" href="css/SourceSansPro.css">
+<link rel="stylesheet" type="text/css" href="css/theme.css">
+<link rel="stylesheet" type="text/css" href="css/notablog.css">
+<!-- Favicon -->
+
+  <link rel="shortcut icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text text-anchor=%22middle%22 dominant-baseline=%22middle%22 x=%2250%22 y=%2255%22 font-size=%2280%22&gt;📖&lt;/text&gt;&lt;/svg&gt;">
+
+<style>
+  :root {
+    font-size: 20px;
+  }
+</style>
+  <title>DOCKER: LINUX NAMESPACE&nbsp;|&nbsp;CookBook</title>
+  <meta property="og:type" content="blog">
+  <meta property="og:title" content="DOCKER: LINUX NAMESPACE">
+  
+  
+  <style>
+    .DateTagBar {
+      margin-top: 1.0rem;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="Navbar">
+  <a href="index.html">
+    <div class="Navbar__Btn">
+      
+        <span><img class="inline-img-icon" src="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text text-anchor=%22middle%22 dominant-baseline=%22middle%22 x=%2250%22 y=%2255%22 font-size=%2280%22&gt;📖&lt;/text&gt;&lt;/svg&gt;"></span>&nbsp;
+      
+      <span>Home</span>
+    </div>
+  </a>
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+      <span class="Navbar__Delim">&centerdot;</span>
+      <a href="jenkins-book.html">
+        <div class="Navbar__Btn">
+          
+            <span><img class="inline-img-icon" src="https://www.jenkins.io/images/logos/jenkins/jenkins.png"></span>&nbsp;
+          
+          <span>Jenkins Book</span>
+        </div>
+      </a>
+    
+  
+    
+  
+    
+  
+    
+      <span class="Navbar__Delim">&centerdot;</span>
+      <a href="about.html">
+        <div class="Navbar__Btn">
+          
+            <span><img class="inline-img-icon" src="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text text-anchor=%22middle%22 dominant-baseline=%22middle%22 x=%2250%22 y=%2255%22 font-size=%2280%22&gt;😀&lt;/text&gt;&lt;/svg&gt;"></span>&nbsp;
+          
+          <span>About</span>
+        </div>
+      </a>
+    
+  
+</nav>
+  <header class="Header">
+    
+    <div class="Header__Spacer Header__Spacer--NoCover">
+    </div>
+    
+    <h1 class="Header__Title">DOCKER: LINUX NAMESPACE</h1>
+    
+      <div class="DateTagBar">
+        
+          <span class="DateTagBar__Item DateTagBar__Date">Posted on Mon, Jul 3, 2023</span>
+        
+        
+          <span class="DateTagBar__Item DateTagBar__Tag DateTagBar__Tag--pink">
+            <a href="tag/Linux.html">Linux</a>
+          </span>
+        
+      </div>
+    
+  </header>
+  <article id="https://www.notion.so/20fe2d5afdb9487faf22a4f32b6408ce" class="PageRoot"><ul id="https://www.notion.so/cbcf742cc2c54e2aaf914c92d0d161c4" class="ColorfulBlock ColorfulBlock--ColorGray TableOfContents"><li class="TableOfContents__Item"><a href="#https://www.notion.so/89f71302fddb40138d268f27416095a2"><div style="margin-left:0px"><span class="SemanticStringArray"><span class="SemanticString">What’s the Linux Namespace?</span></span></div></a></li><li class="TableOfContents__Item"><a href="#https://www.notion.so/35dda60cd6bf49c28e776f53a9243607"><div style="margin-left:0px"><span class="SemanticStringArray"><span class="SemanticString"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">Linux Namespace Types</strong></span></span></div></a></li><li class="TableOfContents__Item"><a href="#https://www.notion.so/1436e10630154d62bdb5a527702e1617"><div style="margin-left:0px"><span class="SemanticStringArray"><span class="SemanticString">clone()系统调用</span></span></div></a></li></ul><h1 id="https://www.notion.so/89f71302fddb40138d268f27416095a2" class="ColorfulBlock ColorfulBlock--ColorDefault Heading Heading--1"><a class="Anchor" href="#https://www.notion.so/89f71302fddb40138d268f27416095a2"><svg width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><span class="SemanticStringArray"><span class="SemanticString">What’s the Linux Namespace?</span></span></h1><div id="https://www.notion.so/e90abdab3f894702ba7be6d7a50547e2" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code">Linux Namespace</code></span><span class="SemanticString">是 Linux 提供的一种内核级别环境隔离的方法。</span><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code">Namespace</code></span><span class="SemanticString"> 为不同的资源提供了隔离和限制的能力，如 </span><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code">UTS</code></span><span class="SemanticString">、 </span><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code">IPC</code></span><span class="SemanticString">、 </span><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code">mount</code></span><span class="SemanticString">、 </span><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code">PID</code></span><span class="SemanticString">、 </span><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code">network</code></span><span class="SemanticString">、 </span><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code">User</code></span><span class="SemanticString"> 等隔离机制，使得多个进程可以在同一系统上并行运行，彼此隔离互不干扰。</span></span></p></div><h1 id="https://www.notion.so/35dda60cd6bf49c28e776f53a9243607" class="ColorfulBlock ColorfulBlock--ColorDefault Heading Heading--1"><a class="Anchor" href="#https://www.notion.so/35dda60cd6bf49c28e776f53a9243607"><svg width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><span class="SemanticStringArray"><span class="SemanticString"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">Linux Namespace Types</strong></span></span></h1><div id="https://www.notion.so/428ca16c729e47d7a9ba05b8622e200b" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">Linux Namespace </strong></span><span class="SemanticString">supports many types of namespaces, official documentation is here《</span><span class="SemanticString"><a class="SemanticString__Fragment SemanticString__Fragment--Link" href="http://lwn.net/Articles/531114/">Namespace in Operation</a></span><span class="SemanticString">》：</span></span></p></div><ol class="NumberedListWrapper"><li id="https://www.notion.so/d053970ed88846829e2a46852681d622" class="NumberedList" value="1"><span class="SemanticStringArray"><span class="SemanticString"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">PID Namespace</strong></span><span class="SemanticString">: Provides process ID isolation, allowing each namespace to have its own set of process IDs. Processes in different PID namespaces can have the same PID, but they refer to different processes in the global namespace.</span></span></li><li id="https://www.notion.so/356c61d661a8471db7abe1766b1922bd" class="NumberedList" value="2"><span class="SemanticStringArray"><span class="SemanticString"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">Network Namespace</strong></span><span class="SemanticString">: Provides network isolation, enabling each namespace to have its own network interfaces, IP addresses, routing tables, and network-related resources. Processes in different network namespaces can have separate network stacks.</span></span></li><li id="https://www.notion.so/d555e67a5c464687ad5b85df91c279a6" class="NumberedList" value="3"><span class="SemanticStringArray"><span class="SemanticString"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">Mount Namespace</strong></span><span class="SemanticString">: Provides file system isolation, allowing each namespace to have its own set of mount points and file system views. Mount namespaces enable processes to have a private file system hierarchy.</span></span></li><li id="https://www.notion.so/a64b36720ce14f9a8beb00366d17c78e" class="NumberedList" value="4"><span class="SemanticStringArray"><span class="SemanticString"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">UTS Namespace</strong></span><span class="SemanticString">: Provides isolation for the hostname and domain name. Each UTS namespace can have its own unique hostname and domain name.</span></span></li><li id="https://www.notion.so/bc6b56c4bcea4fddb38d59ee1bf0f389" class="NumberedList" value="5"><span class="SemanticStringArray"><span class="SemanticString"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">IPC Namespace</strong></span><span class="SemanticString">: Provides isolation for interprocess communication (IPC) mechanisms such as System V IPC and POSIX message queues. Processes in different IPC namespaces can have separate IPC resources.</span></span></li><li id="https://www.notion.so/12612b7423a9470bbd1d20745c76edc8" class="NumberedList" value="6"><span class="SemanticStringArray"><span class="SemanticString"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">User Namespace</strong></span><span class="SemanticString">: Provides isolation for user and group identifiers (UID and GID). User namespaces allow mapping of different user and group IDs inside the namespace to different IDs in the global namespace.</span></span></li></ol><div id="https://www.notion.so/83511b2b255a479abcbd31bd481a871c" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">Linux 提供了一些系统调用函数来操作命名空间，用于创建、管理和操作命名空间。以下是一些常用的操作命名空间的系统调用函数：</span></span></p></div><ul class="BulletedListWrapper"><li id="https://www.notion.so/7ded36de68144706a4f34d1d8d21b3ce" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">clone()</strong></code></span><span class="SemanticString">：</span><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">clone()</strong></code></span><span class="SemanticString"> 用于创建新进程，并可以指定要共享的命名空间。通过设置特定的标志参数，可以选择与父进程共享特定类型的命名空间。</span></span></li><li id="https://www.notion.so/6d0046f196ab4f52b7a75646250a361b" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">unshare()</strong></code></span><span class="SemanticString">：</span><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">unshare()</strong></code></span><span class="SemanticString"> 用于解除与指定类型的命名空间的关联。调用 </span><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">unshare()</strong></code></span><span class="SemanticString"> 函数后，进程将成为该类型命名空间的唯一拥有者，与父进程分离出来成为一个独立的命名空间。</span></span><ul class="BulletedListWrapper"><li id="https://www.notion.so/b6bf7bd7e8564994895ae0fcebe4c92f" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">unshare(CLONE_NEWPID)</strong></code></span><span class="SemanticString">：使用 </span><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">unshare()</strong></code></span><span class="SemanticString"> 函数与 </span><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">CLONE_NEWPID</strong></code></span><span class="SemanticString"> 标志可以创建新的 PID 命名空间，使得进程在该命名空间中具有独立的进程 ID 空间。</span></span></li><li id="https://www.notion.so/c53abb60a3744d9ca33a8e9c11d49c94" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">unshare(CLONE_NEWNET)</strong></code></span><span class="SemanticString">：使用 </span><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">unshare()</strong></code></span><span class="SemanticString"> 函数与 </span><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">CLONE_NEWNET</strong></code></span><span class="SemanticString"> 标志可以创建新的网络命名空间，使得进程在该命名空间中具有独立的网络设备、IP 地址等网络资源。</span></span></li><li id="https://www.notion.so/07673cfde97742189b4d0db6a89683f8" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">unshare(CLONE_NEWUTS)</strong></code></span><span class="SemanticString">：使用 </span><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">unshare()</strong></code></span><span class="SemanticString"> 函数与 </span><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">CLONE_NEWUTS</strong></code></span><span class="SemanticString"> 标志可以创建新的 UTS 命名空间，使得进程在该命名空间中具有独立的主机名和域名。</span></span></li><li id="https://www.notion.so/96fff2e8dc854631b10b27353f97e4de" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">unshare(CLONE_NEWIPC)</strong></code></span><span class="SemanticString">：使用 </span><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">unshare()</strong></code></span><span class="SemanticString"> 函数与 </span><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">CLONE_NEWIPC</strong></code></span><span class="SemanticString"> 标志可以创建新的 IPC 命名空间，使得进程在该命名空间中具有独立的进程间通信资源，如消息队列、信号量和共享内存等。</span></span></li><li id="https://www.notion.so/3d3fafac70c04cf185403c5a5429b17c" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">unshare(CLONE_NEWNS)</strong></code></span><span class="SemanticString">：使用 </span><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">unshare()</strong></code></span><span class="SemanticString"> 函数与 </span><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">CLONE_NEWNS</strong></code></span><span class="SemanticString"> 标志可以创建新的挂载命名空间，使得进程在该命名空间中具有独立的文件系统视图。</span></span></li></ul></li><li id="https://www.notion.so/d15eae5ab55b44a7ab6cee7b054e5de8" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">setns()</strong></code></span><span class="SemanticString">：</span><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">setns()</strong></code></span><span class="SemanticString"> 用于将当前进程加入到已经存在的命名空间中。通过调用 </span><span class="SemanticString"><code class="SemanticString__Fragment SemanticString__Fragment--Code"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">setns()</strong></code></span><span class="SemanticString"> 函数，进程可以共享其他进程已经创建的命名空间。</span></span></li></ul><h1 id="https://www.notion.so/1436e10630154d62bdb5a527702e1617" class="ColorfulBlock ColorfulBlock--ColorDefault Heading Heading--1"><a class="Anchor" href="#https://www.notion.so/1436e10630154d62bdb5a527702e1617"><svg width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><span class="SemanticStringArray"><span class="SemanticString">clone()系统调用</span></span></h1><div id="https://www.notion.so/4756ab0ce0e043fb93b6b13c6e47ebe6" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">首先，我们来看一下一个最简单的clone()系统调用的示例：</span></span></p></div><div></div></article>
+  <script src="https://utteranc.es/client.js"
+        repo="fanxiangs/fanxiangs.github.io"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+  </script>
+  <footer class="Footer">
+  <div>&copy; CookBook 2022</div>
+  <div>&centerdot;</div>
+  <div>Powered by <a href="https://github.com/dragonman225/notablog" target="_blank"
+      rel="noopener noreferrer">Notablog</a>.
+  </div>
+</footer>
+</body>
+
+</html>
